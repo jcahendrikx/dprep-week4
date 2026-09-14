@@ -17,7 +17,7 @@ video_features <- video_view %>%
 write_csv(video_features, "temp/video_features.csv")
 head(video_features)
 video_features %>% select(impressions_n, reach_band)
-
+#1
 
 # Exercise 2
 
