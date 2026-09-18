@@ -23,16 +23,24 @@ video_features <- video_view %>%
   distinct(video_id, .keep_all = TRUE) 
 
 write_csv(video_features, "temp/video_features.csv")
-video_features %>% select(watch_rate_rank, impressions_n, reach_band)
 topwatched <- video_features %>% 
   select(watch_rate_rank, impressions_n, reach_band) %>% 
   arrange(watch_rate_rank)
 head(topwatched, 10)
 
-#1
+glimpse(video_features)
 
 # Exercise 2
-
+creator_summary <- video_features %>% 
+  group_by(creator_id) %>% 
+  summarise(
+    videos_n = n(),
+    impressions_total = sum(impressions_n, na.rm = TRUE), 
+    watched_total = sum(watched_n, na.rm = TRUE),
+    avg_watch_rate = mean(watch_rate, na.rm = TRUE),
+    median_watch_seconds = median(total_watch_seconds, na.rm = TRUE)
+  ) %>% 
+  arrange(desc(impressions_total))
 
 
 # Exercise 3

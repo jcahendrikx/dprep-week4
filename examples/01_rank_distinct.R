@@ -11,10 +11,12 @@ video_simple <- video_view %>%
   mutate(
     watch_rate_rank = rank(-watch_rate),
     high_quality = avg_watch_share >= 0.40
-  ) %>%
+  ) %>%s
   distinct(video_id, .keep_all = TRUE)
+video_simple
 
 video_ranked <- video_view %>%
   mutate(
     watch_rate_rank = rank(-watch_rate, na.last = "keep",
     ties.method = "min"))
+video_ranked
