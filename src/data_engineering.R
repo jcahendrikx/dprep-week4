@@ -31,6 +31,7 @@ head(topwatched, 10)
 glimpse(video_features)
 
 # Exercise 2
+## Creator Summary
 creator_summary <- video_features %>% 
   group_by(creator_id) %>% 
   summarise(
@@ -41,14 +42,71 @@ creator_summary <- video_features %>%
     median_watch_seconds = median(total_watch_seconds, na.rm = TRUE)
   ) %>% 
   arrange(desc(impressions_total))
+creator_summary
 
+## Engagement by band
+engagement_by_band <- video_features %>% 
+  group_by(reach_band) %>% 
+  summarise(
+    videos_n = n(),
+    avg_watch_rate = mean(watch_rate, na.rm = TRUE)
+  )
+engagement_by_band
+
+write_csv(creator_summary, "temp/creator_summary.csv")
+write_csv(engagement_by_band, "temp/engagement_by_band.csv")
 
 # Exercise 3
+## video_enriched
+video_enriched <- video_features %>% 
+  left_join(videos, by = c("video_id", "creator_id")) %>% 
+  left_join(creators, by = "creator_id") %>% 
+  select(video_id, creator_id, creator_name, impressions_n, watch_rate_rank, quality, posting_rate, publish_time)
 
+video_enriched
 
+## user_enriched
+user_enriched <- user_view %>% 
+  left_join(users, by = "user_id") %>% 
+  select(user_id, user_name.x, user_handle.x, base_videos_watched_mean, base_videos_watched_sd)
+user_enriched
+
+write_csv(video_enriched, "temp/video_enriched.csv")
+
+write_csv(user_enriched, "temp/user_enriched.csv")
 
 # Exercise 4
+#Many Issues with the joining due to identical column names
+#which leads to columns changing names and therefore joining not possible
+watch_log <- impressions %>%
+  left_join(
+    watch_events %>% 
+      rename(watch_seconds_video = watch_seconds) %>%
+      select(-session_id, -user_id, -video_id, -creator_id),
+    by = "impression_id"
+  ) %>%
+  left_join(
+    sessions %>% 
+      rename(watch_seconds_session = watch_seconds),
+    by = c("session_id", "user_id")
+  ) %>%
+  left_join(videos, by = c("video_id", "creator_id")) %>%
+  left_join(creators, by = "creator_id")
 
 
+watched_only <- impressions %>%
+  inner_join(watch_events, by = "impression_id")
+
+creator_event_summary <- watch_log %>%
+  group_by(creator_id) %>%
+  summarise(
+    impressions = n(),
+    watched_events = sum(!is.na(action)),
+    total_watch_seconds = sum(watch_seconds_video, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+write_csv(watch_log, "temp/watch_log.csv")
+write_csv(creator_event_summary, "temp/creator_event_summary.csv")
 
 # Exercise 5
