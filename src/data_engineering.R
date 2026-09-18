@@ -1,7 +1,15 @@
+
+
 # Load the data
 library(tidyverse)
 video_view <- read_csv("data/video_view.csv")
-head(video_view)
+user_view <- read_csv("data/user_view.csv")
+videos <- read_csv("data/videos.csv")
+creators <- read_csv("data/creators.csv")
+users <- read_csv("data/users.csv")
+impressions <- read_csv("data/impressions.csv")
+watch_events <- read_csv("data/watch_events.csv")
+sessions <- read_csv("data/sessions.csv")
 
 # Exercise 1
 video_features <- video_view %>% 
@@ -15,8 +23,12 @@ video_features <- video_view %>%
   distinct(video_id, .keep_all = TRUE) 
 
 write_csv(video_features, "temp/video_features.csv")
-head(video_features)
-video_features %>% select(impressions_n, reach_band)
+video_features %>% select(watch_rate_rank, impressions_n, reach_band)
+topwatched <- video_features %>% 
+  select(watch_rate_rank, impressions_n, reach_band) %>% 
+  arrange(watch_rate_rank)
+head(topwatched, 10)
+
 #1
 
 # Exercise 2
