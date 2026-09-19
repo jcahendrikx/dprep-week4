@@ -10,4 +10,4 @@ creator_top10 <- creator_week4 %>%
   arrange(desc(impressions_total)) %>% 
   head(10)
 
-write_csv(creator_top10, "output/creatpr_top10_week4.csv")
+write_csv(creator_top10, "output/creator_top10_week4.csv")
